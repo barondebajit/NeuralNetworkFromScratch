@@ -29,7 +29,6 @@ class Sequential:
                 layer.set_regularizer(regularizer, reg_lambda)
 
     def _validate_input(self, X, y=None):
-        """Validate and normalize input data."""
         # Convert to numpy arrays if needed
         if not isinstance(X, np.ndarray):
             X = np.array(X)
@@ -78,6 +77,7 @@ class Sequential:
         i = 0
         X, _ = self._validate_input(X)
         for layer in self.layers:
+            print("Layer: ", i+1, "forward")
             X = layer.forward(X)
             i+=1
         return X
@@ -86,13 +86,14 @@ class Sequential:
         i = 0
         dA = self.loss(y, self.layers[-1].A, derivative=True)
         for layer in reversed(self.layers):
-            print("Layer", i+1)
+            print("Layer: ", i+1, "backward")
             dA = layer.backward(dA)
             i+=1
 
     def update(self):
         i = 0
         for layer in self.layers:
+            print("Layer: ", i+1, "update")
             layer.update()
             i+=1
 
