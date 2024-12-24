@@ -72,30 +72,27 @@ class Sequential:
             
             if verbose and (epoch + 1) % verbose == 0:
                 print(f"Epoch {epoch + 1}/{epochs}, Loss: {np.mean(losses):.4f}")
+        print("Training complete.")
+        print("Final weights and biases:")
+        for i, layer in enumerate(self.layers):
+            print(f"Layer {i + 1}:")
+            print(f"Weights: {layer.W.mean()}")
+            print(f"Biases: {layer.b.mean()}")
 
     def forward(self, X):
-        i = 0
         X, _ = self._validate_input(X)
         for layer in self.layers:
-            print("Layer: ", i+1, "forward")
             X = layer.forward(X)
-            i+=1
         return X
 
     def backward(self, y):
-        i = 0
         dA = self.loss(y, self.layers[-1].A, derivative=True)
         for layer in reversed(self.layers):
-            print("Layer: ", i+1, "backward")
             dA = layer.backward(dA)
-            i+=1
 
     def update(self):
-        i = 0
         for layer in self.layers:
-            print("Layer: ", i+1, "update")
             layer.update()
-            i+=1
 
     def predict(self, X):
         X, _ = self._validate_input(X)

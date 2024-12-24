@@ -19,6 +19,10 @@ class Dense:
         self.dX = None
         self.dZ = None
         self.dA = None
+        self.m_W = None
+        self.v_W = None
+        self.m_b = None
+        self.v_b = None
         self.optimizer = None
         self.regularizer = None
         self.reg_lambda = 0.0
@@ -35,8 +39,11 @@ class Dense:
             
             self.input_shape = input_dim
             self.W = np.random.randn(input_dim, self.units) * np.sqrt(2 / input_dim)
+            self.m_W = np.zeros_like(self.W)
+            self.v_W = np.zeros_like(self.W)
             self.b = np.zeros((1, self.units))
-            print("b shape in build: ", self.b.shape)
+            self.m_b = np.zeros_like(self.b)
+            self.v_b = np.zeros_like(self.b)
             self.initialized = True
 
     def forward(self, X: np.ndarray):
@@ -53,8 +60,7 @@ class Dense:
             
         assert X.shape[-1] == self.W.shape[0], f"Input shape {X.shape} is not compatible with weight shape {self.W.shape}"
         self.X = X
-        self.Z = np.dot(X, self.W)
-        self.Z += self.b
+        self.Z = np.dot(X, self.W) + self.b
         self.A = self.activation(self.Z) if self.activation is not None else self.Z
         return self.A
 
@@ -69,24 +75,15 @@ class Dense:
             self.dZ = dA
             
         self.dW = np.dot(self.X.T, self.dZ)
-        try:
-            print("db shape before assignment in backward: ", self.db.shape)
-        except:
-            print("db shape before assignment in backward: None")
         self.db = np.sum(self.dZ, axis=0, keepdims=True)
-        try:
-            print("db shape after assignment in backward: ", self.db.shape)
-        except:
-            print("db shape after assignment in backward: None")
         self.dX = np.dot(self.dZ, self.W.T)
         return self.dX
 
     def update(self):
         if self.optimizer is not None:
-            self.W = self.optimizer.update_weights(self.W, self.dW, self.regularizer, self.reg_lambda)
-            print("b shape in update before update_biases call: ", self.b.shape)
-            self.b = self.optimizer.update_biases(self.b, self.db, self.regularizer, self.reg_lambda).reshape(1,-1)
-            print("b shape in update after update_biases call: ", self.b.shape)
+            self.W, self.m_W, self.v_W = self.optimizer.update_weights(self.W, self.dW, self.m_W, self.v_W, self.regularizer, self.reg_lambda)
+            self.b, self.m_b, self.v_b = self.optimizer.update_biases(self.b, self.db, self.m_b, self.v_b, self.regularizer, self.reg_lambda)
+            self.b = self.b.reshape(1, -1)
 
     def set_optimizer(self, optimizer):
         self.optimizer = optimizer
