@@ -8,7 +8,7 @@ This project is an implementation of a [Machine Learning Module](https://github.
 
 ## Implementation
 
-The implementation of the module is provided in the `Implementation.ipynb` file. It works on a toy dataset `toy_dataset.csv` that contains different features of a person - _City_, _Gender_, _Age_ and _Income_ and whether they have an _Illness_.
+The implementation of the module is provided in the `Implementation.ipynb` file. It works on a toy dataset `toy_dataset.csv` that contains different features of a person - _City_, _Gender_, _Age_ and _Income_ and whether they have an _Illness_. The dataset was obtained from Kaggle. You can view it [here](https://www.kaggle.com/datasets/carlolepelaars/toy-dataset).
 
 The preprocessing of the dataset, model selection with layers with appropriate optmizers and loss functions was all handled with classes and functions available in **mlmodule**.
 
